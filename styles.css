@@ -1,0 +1,337 @@
+/* Variáveis CSS para tema dark */
+:root {
+    --bg-color: #121212;
+    --surface-color: #1E1E1E;
+    --primary-text-color: #E0E0E0;
+    --secondary-text-color: #A0A0A0;
+    --accent-color: #00D18F;
+    --accent-hover-color: #00B37A;
+    --input-bg-color: #2C2C2C;
+    --border-color: #444;
+    --success-color: #28a745;
+    --error-color: #FF5252;
+    --info-color: #00A3FF;
+    --warning-color: #FFA726;
+}
+
+/* Estilos gerais */
+body {
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--primary-text-color);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+}
+
+.container {
+    max-width: 950px;
+    width: 100%;
+    background-color: var(--surface-color);
+    padding: 20px 30px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+
+/* Títulos */
+h1, h2, h3 {
+    color: #ffffff;
+    text-align: center;
+}
+
+h2 {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    font-size: 1.4em;
+    font-weight: 600;
+    text-align: left;
+}
+
+h3 {
+    text-align: left;
+    font-size: 1.2em;
+    margin-top: 30px;
+    color: var(--accent-color);
+}
+
+/* Sistema de abas */
+.tab-nav {
+    display: flex;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    color: var(--secondary-text-color);
+    padding: 14px 20px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 600;
+    transition: color 0.2s, border-bottom 0.2s;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-button.active {
+    color: var(--accent-color);
+    border-bottom: 3px solid var(--accent-color);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s;
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Formulários */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: var(--secondary-text-color);
+    font-size: 0.95em;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--input-bg-color);
+    border: 1px solid var(--border-color);
+    color: var(--primary-text-color);
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+input:focus, select:focus {
+    border-color: var(--accent-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 209, 143, 0.2);
+}
+
+.form-group-inline {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.input-wrapper {
+    flex-grow: 1;
+}
+
+.currency-wrapper {
+    flex-shrink: 0;
+    width: 100px;
+}
+
+/* Botões */
+.btn {
+    background-color: var(--accent-color);
+    color: #121212;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 700;
+    width: 100%;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 209, 143, 0.15);
+}
+
+.btn-secondary {
+    background-color: var(--input-bg-color);
+    color: var(--primary-text-color);
+    border: 1px solid var(--border-color);
+}
+
+.btn-danger {
+    background-color: var(--error-color);
+    color: white;
+}
+
+.btn-info {
+    background-color: var(--info-color);
+    color: white;
+}
+
+.btn-warning {
+    background-color: var(--warning-color);
+    color: #121212;
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.btn-small {
+    padding: 5px 10px;
+    font-size: 0.8em;
+    font-weight: 500;
+    margin: 0 4px;
+    width: auto;
+    text-decoration: none;
+}
+
+/* Caixas de resultado */
+.result-box {
+    background-color: var(--bg-color);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    text-align: center;
+    color: #ffffff;
+    border: 1px solid var(--border-color);
+    line-height: 1.8;
+}
+
+/* Tabelas */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+}
+
+th {
+    background-color: var(--input-bg-color);
+}
+
+.actions-cell {
+    min-width: 320px;
+    text-align: right;
+}
+
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: var(--secondary-text-color);
+}
+
+/* Dashboard */
+.dashboard-grid, .filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.dashboard-card {
+    background-color: var(--input-bg-color);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.card-title {
+    font-size: 1em;
+    color: var(--secondary-text-color);
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.card-value {
+    font-size: 2em;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Classes utilitárias */
+.profit {
+    color: var(--success-color);
+}
+
+.loss {
+    color: var(--error-color);
+}
+
+/* Modais */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+    background-color: var(--surface-color);
+    margin: 5% auto;
+    padding: 30px;
+    border: 1px solid var(--border-color);
+    width: 90%;
+    max-width: 500px;
+    border-radius: 12px;
+    animation: slideIn 0.3s;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.5em;
+    color: #fff;
+}
+
+.close-button {
+    color: var(--secondary-text-color);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-footer {
+    margin-top: 25px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}

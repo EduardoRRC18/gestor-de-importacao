@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Estoque e Vendas - Importação</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Gestor de Importação</h1>
+    <nav class="tab-nav">
+        <button class="tab-button active" data-tab="calculadora">Calculadora</button>
+        <button class="tab-button" data-tab="estoque">Estoque</button>
+        <button class="tab-button" data-tab="vendidos">Vendidos</button>
+        <button class="tab-button" data-tab="dashboard">Dashboard</button>
+        <button class="tab-button" data-tab="configuracoes">Configurações</button>
+    </nav>
+
+    <div id="calculadora" class="tab-content active">
+        <h3>1. Dados do Produto</h3>
+        <div class="form-group">
+            <label for="product-model">Modelo</label>
+            <input type="text" id="product-model" placeholder="Ex: Macbook Air M1 256GB">
+        </div>
+        <div class="form-group">
+            <label for="product-category">Categoria</label>
+            <select id="product-category">
+                <option>Notebook</option>
+                <option>Fone</option>
+                <option>Smartphone</option>
+                <option>Acessório</option>
+                <option>Outro</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <button id="search-price-btn" class="btn btn-secondary">Pesquisar Preço Médio</button>
+            <div id="market-price-result" class="result-box" style="display:none; text-align:left; font-size: 1em; margin-top: 15px;"></div>
+        </div>
+        
+        <h3>2. Calcular Custo de Importação</h3>
+        <div class="form-group form-group-inline">
+            <div class="input-wrapper">
+                <label for="product-value">Valor do Produto</label>
+                <input type="number" id="product-value" placeholder="500.00">
+            </div>
+            <div class="currency-wrapper">
+                <label>Moeda</label>
+                <select id="product-value-currency">
+                    <option value="USD" selected>US$</option>
+                    <option value="BRL">R$</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="us-closer-freight-usd">Frete para a US Closer (US$)</label>
+            <input type="number" id="us-closer-freight-usd" placeholder="15.00">
+        </div>
+        <div class="form-group">
+            <label for="dollar-rate">Cotação do Dólar (R$)</label>
+            <input type="number" id="dollar-rate" placeholder="Buscando...">
+        </div>
+        <div class="form-group form-group-inline">
+            <div class="input-wrapper">
+                <label for="brazil-freight">Frete para o Brasil</label>
+                <input type="number" id="brazil-freight" placeholder="250.00">
+            </div>
+            <div class="currency-wrapper">
+                <label>Moeda</label>
+                <select id="brazil-freight-currency">
+                    <option value="BRL" selected>R$</option>
+                    <option value="USD">US$</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="import-tax-brl">Taxa de Importação (R$)</label>
+            <input type="number" id="import-tax-brl" value="140.00">
+        </div>
+        <button id="calculate-cost-btn" class="btn">Calcular Custo</button>
+        <div id="calculator-result-area" class="result-box" style="display:none; margin-bottom: 20px;"></div>
+
+        <div id="profit-simulator-area" style="display:none;">
+            <h3>3. Simular Lucro e Adicionar ao Estoque</h3>
+            <div class="form-group">
+                <label for="sim-sell-price">Preço de Venda Simulado (R$)</label>
+                <input type="number" id="sim-sell-price" placeholder="3000.00">
+            </div>
+            <div class="form-group">
+                <label for="sim-ml-fee-type">Simular com Taxa do Mercado Livre</label>
+                <select id="sim-ml-fee-type">
+                    <option value="none">Venda Direta (sem taxas)</option>
+                    <option value="classico">Anúncio Clássico (~14%)</option>
+                    <option value="premium">Anúncio Premium (~19%)</option>
+                </select>
+            </div>
+            <button id="simulate-profit-btn" class="btn btn-info">Analisar Lucro Potencial</button>
+            <div id="profit-simulation-result" class="result-box" style="display:none; text-align:left;"></div>
+            <button id="add-to-stock-btn" class="btn btn-secondary" style="margin-top:20px;">Adicionar ao Estoque</button>
+        </div>
+    </div>
+    
+    <div id="estoque" class="tab-content">
+        <h2>Itens em Estoque</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Categoria</th>
+                        <th>Modelo</th>
+                        <th>Custo</th>
+                        <th class="actions-cell">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-table-body"></tbody>
+            </table>
+        </div>
+        <div id="no-inventory" class="no-data">Nenhum item em estoque.</div>
+    </div>
+
+    <div id="vendidos" class="tab-content">
+        <h2>Itens Vendidos</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Modelo</th>
+                        <th>Custo</th>
+                        <th>Venda</th>
+                        <th>Canal</th>
+                        <th>Lucro</th>
+                        <th class="actions-cell">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="sold-table-body"></tbody>
+            </table>
+        </div>
+        <div id="no-sold-items" class="no-data">Nenhum item vendido ainda.</div>
+    </div>
+    
+    <div id="dashboard" class="tab-content">
+        <h2>Resumo do Negócio</h2>
+        <div class="filter-grid">
+            <div class="form-group">
+                <label for="year-filter">Ano</label>
+                <select id="year-filter"></select>
+            </div>
+            <div class="form-group">
+                <label for="month-filter">Mês</label>
+                <select id="month-filter"></select>
+            </div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <p class="card-title">Lucro Total</p>
+                <h3 id="db-total-profit" class="card-value"></h3>
+            </div>
+            <div class="dashboard-card">
+                <p class="card-title">Itens Vendidos</p>
+                <h3 id="db-items-sold" class="card-value"></h3>
+            </div>
+            <div class="dashboard-card">
+                <p class="card-title">Lucro Médio</p>
+                <h3 id="db-avg-profit" class="card-value"></h3>
+            </div>
+            <div class="dashboard-card">
+                <p class="card-title">Valor em Estoque</p>
+                <h3 id="db-stock-value" class="card-value"></h3>
+            </div>
+        </div>
+        <div class="dashboard-card" style="margin-top: 20px; display: none;" id="pie-chart-container">
+            <h3 style="text-align:center; color: var(--secondary-text-color); margin-top:0;">Vendas por Categoria</h3>
+            <canvas id="productPieChart"></canvas>
+        </div>
+    </div>
+    
+    <div id="configuracoes" class="tab-content">
+        <h2>Backup e Restauração</h2>
+        <p style="color: var(--secondary-text-color); line-height: 1.6;">Seus dados são salvos localmente no seu navegador. É crucial fazer backups regulares para evitar perdas.</p>
+        <div class="dashboard-card" style="margin-top: 20px;">
+            <h3 style="text-align:left; margin-top:0;">Exportar Dados</h3>
+            <p style="color: var(--secondary-text-color);">Salve todos os seus registros em um arquivo de backup (.json).</p>
+            <button id="export-btn" class="btn btn-info">Exportar Backup</button>
+        </div>
+        <div class="dashboard-card" style="margin-top: 20px;">
+            <h3 style="text-align:left; margin-top:0;">Importar Dados</h3>
+            <p style="color: var(--secondary-text-color);">Carregue um arquivo de backup para restaurar seus dados. <strong style="color: var(--warning-color);">Atenção: Isso substituirá todos os dados atuais!</strong></p>
+            <button id="import-btn" class="btn btn-warning">Importar Backup</button>
+            <input type="file" id="import-file-input" style="display: none;" accept=".json">
+        </div>
+    </div>
+</div>
+
+<!-- Modais -->
+<div id="add-stock-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Adicionar ao Estoque</h3>
+            <span class="close-button">&times;</span>
+        </div>
+        <form id="add-stock-form">
+            <div class="form-group">
+                <label for="item-identifier">Identificador Base (Ex: Serial, Cor)</label>
+                <input type="text" id="item-identifier" required>
+            </div>
+            <div class="form-group">
+                <label for="item-quantity">Quantidade</label>
+                <input type="number" id="item-quantity" value="1" min="1" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-button">Cancelar</button>
+                <button type="submit" class="btn">Salvar no Estoque</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="sell-item-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Registrar Venda</h3>
+            <span class="close-button">&times;</span>
+        </div>
+        <form id="sell-item-form">
+            <input type="hidden" id="sell-item-id">
+            <div class="form-group">
+                <label for="sell-price">Valor da Venda (R$)</label>
+                <input type="number" step="0.01" id="sell-price" required>
+            </div>
+            <div class="form-group">
+                <label for="sell-channel">Canal da Venda</label>
+                <select id="sell-channel" required>
+                    <option>Venda Direta</option>
+                    <option>Mercado Livre</option>
+                    <option>OLX</option>
+                    <option>Outro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sell-date">Data da Venda</label>
+                <input type="date" id="sell-date" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-button">Cancelar</button>
+                <button type="submit" class="btn">Confirmar Venda</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="details-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="details-modal-title" class="modal-title">Detalhes do Custo</h3>
+            <span class="close-button">&times;</span>
+        </div>
+        <div id="details-modal-body" style="line-height: 1.8;"></div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary close-button">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<div id="edit-stock-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Editar Item do Estoque</h3>
+            <span class="close-button">&times;</span>
+        </div>
+        <form id="edit-stock-form">
+            <input type="hidden" id="edit-stock-id">
+            <div class="form-group">
+                <label for="edit-product-model">Modelo</label>
+                <input type="text" id="edit-product-model">
+            </div>
+            <div class="form-group">
+                <label for="edit-product-category">Categoria</label>
+                <select id="edit-product-category">
+                    <option>Notebook</option>
+                    <option>Fone</option>
+                    <option>Smartphone</option>
+                    <option>Acessório</option>
+                    <option>Outro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-product-value-usd">Valor (US$)</label>
+                <input type="number" step="0.01" id="edit-product-value-usd">
+            </div>
+            <div class="form-group">
+                <label for="edit-us-closer-freight-usd">Frete US (US$)</label>
+                <input type="number" step="0.01" id="edit-us-closer-freight-usd">
+            </div>
+            <div class="form-group">
+                <label for="edit-dollar-rate">Cotação (R$)</label>
+                <input type="number" step="0.01" id="edit-dollar-rate">
+            </div>
+            <div class="form-group">
+                <label for="edit-brazil-freight-brl">Frete BR (R$)</label>
+                <input type="number" step="0.01" id="edit-brazil-freight-brl">
+            </div>
+            <div class="form-group">
+                <label for="edit-import-tax-brl">Taxa (R$)</label>
+                <input type="number" step="0.01" id="edit-import-tax-brl">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-button">Cancelar</button>
+                <button type="submit" class="btn">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="edit-sale-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Editar Registro de Venda</h3>
+            <span class="close-button">&times;</span>
+        </div>
+        <form id="edit-sale-form">
+            <input type="hidden" id="edit-sale-id">
+            <div class="form-group">
+                <label for="edit-sell-price">Valor da Venda (R$)</label>
+                <input type="number" step="0.01" id="edit-sell-price" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-sell-channel">Canal da Venda</label>
+                <select id="edit-sell-channel" required>
+                    <option>Venda Direta</option>
+                    <option>Mercado Livre</option>
+                    <option>OLX</option>
+                    <option>Outro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-sell-date">Data da Venda</label>
+                <input type="date" id="edit-sell-date" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-button">Cancelar</button>
+                <button type="submit" class="btn">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
