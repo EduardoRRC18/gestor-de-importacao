@@ -61,6 +61,9 @@ Thumbs.db
 *.tar.gz
 *.rar
 
+# Permitir arquivos de backup JSON na pasta backups
+!backups/*.json
+
 # Build outputs
 dist/
 build/
